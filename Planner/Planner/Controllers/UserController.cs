@@ -83,6 +83,19 @@ namespace Planner.Controllers
 
         }
 
+        [HttpGet("GetByPlanID/{planID}")]
+        public async Task<IActionResult> GetByPlanID(int? planID)
+        {
+            if(planID == null)
+            {
+                return BadRequest("PlanID is required");
+            }
+
+            var user = await _unitOfWork.User.GetUsersByPlanID(planID.Value);
+            return Ok(user);
+
+        }
+
         public class UserModel
         {
             public string Id { get; set; } = string.Empty;

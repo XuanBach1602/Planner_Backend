@@ -22,9 +22,8 @@ namespace Planner.Model
 
         [Required]
         [ForeignKey("Plans")]
-        public int? PlanID { get; set; }
+        public int PlanID { get; set; }
         [ForeignKey(nameof(PlanID))]
-        [SwaggerIgnore]
         public Plan? Plan { get; set; } 
 
         [ForeignKey("Users")]

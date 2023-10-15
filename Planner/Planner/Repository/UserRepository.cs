@@ -35,5 +35,19 @@ namespace Planner.Repository
         {
             _context.Update(user);
         }
+
+        public async Task<List<User>> GetUsersByPlanID(int planID)
+        {
+            var userPlan = _context.UserPlans
+                .Include(x => x.User)
+                .Where(x => x.PlanId == planID);
+            var users = userPlan.Select(x => x.User);
+            if(userPlan != null)
+            {
+                return await users.ToListAsync();
+            }
+
+            return new List<User>();
+        }
     }
 }

@@ -56,7 +56,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(plans);
+            var PlanModels = plans.Select(u => ConvertPlanToPlanModel(u));
+            return Ok(PlanModels);
             
         }
 
@@ -97,20 +98,33 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(plan);
+            return Ok(ConvertPlanToPlanModel(plan));
         }
 
-        [HttpGet("{planID}/tasks")]
-        public async Task<IActionResult> GetTasksByPlanID(int? planID)
+
+        [HttpGet("GetByUserID/{userID}")]
+        public async Task<IActionResult> GetByUserID(string userID)
         {
-            if(planID == null)
+            if (userID == null)
             {
-                return BadRequest("PlanID is required");
+                return NotFound("UserID is required");
             }
 
-            var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.PlanID==planID);
-            return Ok(tasks);
+            var plans = await _unitOfWork.Plan.GetPlansByUserID(userID);
+            var PlanModels = plans.Select(p => ConvertPlanToPlanModel(p));
+            return Ok(PlanModels);
         }
-       
+
+        [NonAction]
+        public PlanModel ConvertPlanToPlanModel(Plan plan)
+        {
+            return new PlanModel
+            {
+                Id = plan.Id,
+                Name = plan.Name,
+                CreatedUserID = plan.CreatedUserID
+            };
+        }
+
     }
 }

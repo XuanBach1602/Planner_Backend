@@ -23,6 +23,15 @@ namespace Planner.Repository
         public async Task AddAsync(Plan plan)
         {
             await _context.Plans.AddAsync(plan);
+            await _context.SaveChangesAsync();
+            int planid = plan.Id;
+            var userPlan = new UserPlan
+            {
+                PlanId = planid,
+                UserId = plan.CreatedUserID
+            };
+            await _context.UserPlans.AddAsync(userPlan);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Plan>> GetAllAsync(Expression<Func<Plan, bool>>? filter = null, string? includeProperties = null)
@@ -68,6 +77,23 @@ namespace Planner.Repository
         public void Update(Plan plan)
         {
             _context.Plans.Update(plan);
+        }
+
+        public async Task<List<Plan>> GetPlansByUserID(string userID)
+        {
+            var userPlans = _context.UserPlans
+                .Include(u => u.Plan)
+                .Where(u => u.UserId == userID);
+            var plans = userPlans.Select(u => u.Plan);
+
+            if (plans != null)
+            {
+                return await plans.ToListAsync();
+            }
+
+            return new List<Plan>();
+                
+
         }
     }
 }

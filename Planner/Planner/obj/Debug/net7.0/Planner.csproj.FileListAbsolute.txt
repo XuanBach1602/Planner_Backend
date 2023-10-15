@@ -80,3 +80,4 @@ C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Debug\net7.0\run
 C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Debug\net7.0\NSwag.Annotations.dll

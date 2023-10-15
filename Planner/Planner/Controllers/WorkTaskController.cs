@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
 using System.Text.RegularExpressions;
 
 namespace Planner.Controllers
 {
+    //Checked
+
     [Route("api/worktask")]
     [ApiController]
     public class WorkTaskController : Controller
@@ -56,7 +59,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(WorkTasks);
+            var WorkTaskModels = WorkTasks.Select(w => ConvertWorkTaskToWorkTaskModel(w));
+            return Ok(WorkTaskModels);
             
         }
 
@@ -97,8 +101,51 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(WorkTask);
+            return Ok(ConvertWorkTaskToWorkTaskModel(WorkTask));
+           ;
         }
-       
+
+        [HttpGet("GetByUserID/{userID}")]
+        public async Task<IActionResult> GetByUserID(string userID)
+        {
+            if (userID == null)
+            {
+                return BadRequest("The field ID is required");
+            }
+            var worktasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.AssignedUserID == userID);
+            var WorkTaskModels = worktasks.Select(w => ConvertWorkTaskToWorkTaskModel(w));
+            return Ok(WorkTaskModels);
+        }
+
+        [HttpGet("GetByPlanID/{planID}")]
+        public async Task<IActionResult> GetTasksByPlanID(int? planID)
+        {
+            if (planID == null)
+            {
+                return BadRequest("PlanID is required");
+            }
+
+            var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.PlanID == planID);
+            var WorkTaskModels = tasks.Select(w => ConvertWorkTaskToWorkTaskModel(w));
+            return Ok(WorkTaskModels);
+        }
+
+        [NonAction]
+        public WorkTaskModel ConvertWorkTaskToWorkTaskModel(WorkTask WorkTask)
+        {
+            return new WorkTaskModel
+            {
+                Id = WorkTask.Id,
+                Name = WorkTask.Name,
+                Description = WorkTask.Description,
+                Status = WorkTask.Status,
+                StartDate = WorkTask.StartDate,
+                DueDate = WorkTask.DueDate,
+                PlanID = WorkTask.PlanID,
+                CreatedUserID = WorkTask.CreatedUserID,
+                AssignedUserID = WorkTask.AssignedUserID
+            };
+        }
+
     }
 }

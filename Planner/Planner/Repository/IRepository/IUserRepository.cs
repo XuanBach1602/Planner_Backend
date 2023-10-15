@@ -9,5 +9,6 @@ namespace Planner.Repository.IRepository
         Task<User> GetFirstOrDefaultAsync(Expression<Func<User, bool>> filter);
 
         void Update(User user);
+        Task<List<User>> GetUsersByPlanID(int planID);
     }
 }

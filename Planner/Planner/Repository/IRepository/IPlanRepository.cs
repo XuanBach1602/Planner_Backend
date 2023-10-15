@@ -13,5 +13,6 @@ namespace Planner.Repository.IRepository
         Task<Plan> GetFirstOrDefaultAsync(Expression<Func<Plan, bool>> filter, string? includeProperties = null);
         void Update(Plan plan);
         void Remove(Plan plan);
+        Task<List<Plan>> GetPlansByUserID(string userId);
     }
 }
