@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Planner.Repository
-    
+
 {
     public class PlanRepository : IPlanRepository
     {
@@ -92,7 +87,7 @@ namespace Planner.Repository
             }
 
             return new List<Plan>();
-                
+
 
         }
     }

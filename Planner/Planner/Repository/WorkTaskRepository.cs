@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace WorkTaskner.Repository
 {

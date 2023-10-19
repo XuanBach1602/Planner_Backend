@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System.Text.RegularExpressions;
 
 namespace Planner.Controllers
 {
@@ -40,25 +38,25 @@ namespace Planner.Controllers
             try
             {
                 await _unitOfWork.Save();
-                return Ok(new {message = "Update plan succesfully"});
+                return Ok(new { message = "Update plan succesfully" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);         
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var  plans = await _unitOfWork.Plan.GetAllAsync();
-            if(plans == null)
+            var plans = await _unitOfWork.Plan.GetAllAsync();
+            if (plans == null)
             {
                 return NotFound();
             }
             var PlanModels = plans.Select(u => ConvertPlanToPlanModel(u));
             return Ok(PlanModels);
-            
+
         }
 
         [HttpDelete]
@@ -69,21 +67,21 @@ namespace Planner.Controllers
                 return BadRequest();
             }
             var plan = await _unitOfWork.Plan.GetFirstOrDefaultAsync(x => x.Id == id);
-            if(plan == null)
+            if (plan == null)
             {
                 return NotFound();
             }
-             _unitOfWork.Plan.Remove(plan);
+            _unitOfWork.Plan.Remove(plan);
             try
             {
                 await _unitOfWork.Save();
                 return Ok(new { message = "Delele plan successfully" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         [HttpGet("{id}")]
@@ -93,8 +91,8 @@ namespace Planner.Controllers
             {
                 return BadRequest();
             }
-            var plan = await _unitOfWork.Plan.GetFirstOrDefaultAsync(x => x.Id==id);
-            if(plan == null)
+            var plan = await _unitOfWork.Plan.GetFirstOrDefaultAsync(x => x.Id == id);
+            if (plan == null)
             {
                 return NotFound();
             }

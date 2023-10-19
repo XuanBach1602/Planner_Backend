@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System.ComponentModel.DataAnnotations;
 
 namespace Planner.Controllers
 {
@@ -34,7 +31,7 @@ namespace Planner.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -44,8 +41,8 @@ namespace Planner.Controllers
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    Email = user?.Email?? "",
-                    PhoneNumber = user?.PhoneNumber?? "",
+                    Email = user?.Email ?? "",
+                    PhoneNumber = user?.PhoneNumber ?? "",
                     Address = user?.Address ?? ""
                 };
                 var data = new { token, userInfo };
@@ -57,7 +54,7 @@ namespace Planner.Controllers
         public async Task<IActionResult> SignUp(SignUpModel model)
         {
             var result = await _userRepository.SignUp(model);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 await _plannerDbContext.SaveChangesAsync();
                 return Ok(new { message = "Sign Up successfully" });
@@ -73,7 +70,7 @@ namespace Planner.Controllers
             var result = await _userRepository.SignOut();
             if (result)
             {
-                return Ok(new {message = "Sign out successfully"});
+                return Ok(new { message = "Sign out successfully" });
             }
 
             return BadRequest(new { message = "Sign out failed" });
@@ -85,7 +82,7 @@ namespace Planner.Controllers
             public string Name { get; set; } = "";
             public string Email { get; set; } = "";
             public string PhoneNumber { get; set; } = "";
-            public string Address  { get; set; } ="";
+            public string Address { get; set; } = "";
         }
 
 

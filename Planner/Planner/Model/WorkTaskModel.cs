@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Planner.Model
 {
@@ -18,7 +17,7 @@ namespace Planner.Model
         public DateTime DueDate { get; set; }
 
         [Required]
-        public int PlanID { get; set; } 
+        public int PlanID { get; set; }
         [Required]
         public string CreatedUserID { get; set; } = string.Empty;
         public string? AssignedUserID { get; set; }

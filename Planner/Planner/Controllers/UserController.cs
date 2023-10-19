@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Planner.Model;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Repository.IRepository;
 
 namespace Planner.Controllers
@@ -61,7 +59,7 @@ namespace Planner.Controllers
         public async Task<IActionResult> Update(string id, UserModel userModel)
         {
             var user = await _unitOfWork.User.GetFirstOrDefaultAsync(x => x.Id == id);
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest("The user's data is invalid");
             }
@@ -76,7 +74,7 @@ namespace Planner.Controllers
                 await _unitOfWork.Save();
                 return Ok("Update successfully");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -86,7 +84,7 @@ namespace Planner.Controllers
         [HttpGet("GetByPlanID/{planID}")]
         public async Task<IActionResult> GetByPlanID(int? planID)
         {
-            if(planID == null)
+            if (planID == null)
             {
                 return BadRequest("PlanID is required");
             }
@@ -105,6 +103,6 @@ namespace Planner.Controllers
             public string PhoneNumber { get; set; } = string.Empty;
             public string ImageUrl { get; set; } = string.Empty;
         }
-      
+
     }
 }

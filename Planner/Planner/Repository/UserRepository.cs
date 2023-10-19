@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Planner.Repository
@@ -42,7 +41,7 @@ namespace Planner.Repository
                 .Include(x => x.User)
                 .Where(x => x.PlanId == planID);
             var users = userPlan.Select(x => x.User);
-            if(userPlan != null)
+            if (userPlan != null)
             {
                 return await users.ToListAsync();
             }

@@ -1,13 +1,11 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Planner.Model;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Planner.Repository;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Planner.Model;
+using Planner.Repository;
 using Planner.Repository.IRepository;
+using System.Text;
 using WorkTaskner.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +30,18 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //Identity
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<PlannerDbContext>().AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(option =>
+{
+    option.Password.RequireDigit = false;
+    option.Password.RequireDigit = false; // Không bắt phải có số
+    option.Password.RequireDigit = false; // Không bắt phải có số
+    option.Password.RequireLowercase = false; // Không bắt phải có chữ thường
+    option.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
+    option.Password.RequireUppercase = false; // Không bắt buộc chữ in
+    option.Password.RequiredLength = 8; // Số ký tự tối thiểu của password
+});
+
 
 builder.Services.AddAuthentication(options =>
 {

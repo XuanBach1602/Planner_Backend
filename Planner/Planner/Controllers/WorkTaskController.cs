@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Model;
 using Planner.Repository.IRepository;
-using System.Text.RegularExpressions;
 
 namespace Planner.Controllers
 {
@@ -43,25 +40,25 @@ namespace Planner.Controllers
             try
             {
                 await _unitOfWork.Save();
-                return Ok(new {message = "Update workTask succesfully"});
+                return Ok(new { message = "Update workTask succesfully" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);         
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllByPlanID()
         {
-            var  WorkTasks = await _unitOfWork.WorkTask.GetAllAsync();
-            if(WorkTasks == null)
+            var WorkTasks = await _unitOfWork.WorkTask.GetAllAsync();
+            if (WorkTasks == null)
             {
                 return NotFound();
             }
             var WorkTaskModels = WorkTasks.Select(w => ConvertWorkTaskToWorkTaskModel(w));
             return Ok(WorkTaskModels);
-            
+
         }
 
         [HttpDelete]
@@ -72,21 +69,21 @@ namespace Planner.Controllers
                 return BadRequest();
             }
             var WorkTask = await _unitOfWork.WorkTask.GetFirstOrDefaultAsync(x => x.Id == id);
-            if(WorkTask == null)
+            if (WorkTask == null)
             {
                 return NotFound();
             }
-             _unitOfWork.WorkTask.Remove(WorkTask);
+            _unitOfWork.WorkTask.Remove(WorkTask);
             try
             {
                 await _unitOfWork.Save();
                 return Ok(new { message = "Delele WorkTask successfully" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         [HttpGet("{id}")]
@@ -96,13 +93,13 @@ namespace Planner.Controllers
             {
                 return BadRequest();
             }
-            var WorkTask = await _unitOfWork.WorkTask.GetFirstOrDefaultAsync(x => x.Id==id);
-            if(WorkTask == null)
+            var WorkTask = await _unitOfWork.WorkTask.GetFirstOrDefaultAsync(x => x.Id == id);
+            if (WorkTask == null)
             {
                 return NotFound();
             }
             return Ok(ConvertWorkTaskToWorkTaskModel(WorkTask));
-           ;
+            ;
         }
 
         [HttpGet("GetByUserID/{userID}")]

@@ -10,7 +10,7 @@ namespace Planner.Repository
 {
     public class AuthRepository : IAuthRepository
     {
-        private readonly UserManager<User> _userManager;   
+        private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
         public AuthRepository(UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager)

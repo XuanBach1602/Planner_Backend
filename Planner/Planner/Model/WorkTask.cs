@@ -1,7 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using NSwag.Annotations;
 
 namespace Planner.Model
 {
@@ -15,7 +14,7 @@ namespace Planner.Model
         public string Description { get; set; } = string.Empty;
         [Required]
         public string Status { get; set; } = string.Empty;
-        [Required] 
+        [Required]
         public DateTime StartDate { get; set; }
         [Required]
         public DateTime DueDate { get; set; }
@@ -24,7 +23,7 @@ namespace Planner.Model
         [ForeignKey("Plans")]
         public int PlanID { get; set; }
         [ForeignKey(nameof(PlanID))]
-        public Plan? Plan { get; set; } 
+        public Plan? Plan { get; set; }
 
         [ForeignKey("Users")]
         public string CreatedUserID { get; set; }
