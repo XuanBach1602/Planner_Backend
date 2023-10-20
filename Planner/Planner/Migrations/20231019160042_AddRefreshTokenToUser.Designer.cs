@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planner.Model;
 
@@ -11,9 +12,11 @@ using Planner.Model;
 namespace Planner.Migrations
 {
     [DbContext(typeof(PlannerDbContext))]
-    partial class PlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231019160042_AddRefreshTokenToUser")]
+    partial class AddRefreshTokenToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,7 +174,12 @@ namespace Planner.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Plans");
                 });
@@ -383,6 +391,15 @@ namespace Planner.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Planner.Model.Plan", b =>
+                {
+                    b.HasOne("Planner.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Planner.Model.UserPlan", b =>

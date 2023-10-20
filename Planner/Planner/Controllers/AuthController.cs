@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Planner.Model;
 using Planner.Repository.IRepository;
+using System.Security.Claims;
 
 namespace Planner.Controllers
 {
@@ -9,13 +11,13 @@ namespace Planner.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private readonly IAuthRepository _userRepository;
+        private readonly IAuthRepository _authRepository;
         private readonly UserManager<User> _userManager;
         private readonly PlannerDbContext _plannerDbContext;
 
         public AuthController(IAuthRepository userRepository, PlannerDbContext plannerDbContext, UserManager<User> userManager)
         {
-            _userRepository = userRepository;
+            _authRepository = userRepository;
             _plannerDbContext = plannerDbContext;
             _userManager = userManager;
 
@@ -24,7 +26,7 @@ namespace Planner.Controllers
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn(SignInModel model)
         {
-            var token = await _userRepository.SignIn(model);
+            var token = await _authRepository.SignIn(model);
             if (string.IsNullOrEmpty(token))
             {
                 return Unauthorized();
@@ -37,11 +39,13 @@ namespace Planner.Controllers
             }
             else
             {
+                var newRefreshToken = _authRepository.GenerateRefreshToken();
+                _authRepository.SetRefreshToken(newRefreshToken, user, HttpContext);
                 var userInfo = new UserInfo
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    Email = user?.Email ?? "",
+                    Email = user.Email,
                     PhoneNumber = user?.PhoneNumber ?? "",
                     Address = user?.Address ?? ""
                 };
@@ -51,9 +55,10 @@ namespace Planner.Controllers
         }
 
         [HttpPost("SignUp")]
-        public async Task<IActionResult> SignUp(SignUpModel model)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> SignUp([FromForm] SignUpModel model)
         {
-            var result = await _userRepository.SignUp(model);
+            var result = await _authRepository.SignUp(model);
             if (result.Succeeded)
             {
                 await _plannerDbContext.SaveChangesAsync();
@@ -67,13 +72,51 @@ namespace Planner.Controllers
         [HttpPost("SignOut")]
         public async Task<IActionResult> SignOut()
         {
-            var result = await _userRepository.SignOut();
+            var result = await _authRepository.SignOut();
             if (result)
             {
                 return Ok(new { message = "Sign out successfully" });
             }
 
             return BadRequest(new { message = "Sign out failed" });
+        }
+
+        [Authorize]
+        [HttpPost("GetRefreshToken")]
+        public async Task<ActionResult<string>> RefreshToken()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (claim != null)
+            {
+
+                string userId = claim.Value;
+                var user = _userManager.Users.FirstOrDefault(x => x.Id == userId);
+                if (!user.RefreshToken.Equals(refreshToken))
+                {
+                    return Unauthorized("Invalid Refresh Token.");
+                }
+                else if (user.TokenExpires < DateTime.Now)
+                {
+                    return Unauthorized("Token expired.");
+                }
+                string token = _authRepository.CreateToken(user.Email);
+                var newRefreshToken = _authRepository.GenerateRefreshToken();
+                _authRepository.SetRefreshToken(newRefreshToken, user, HttpContext);
+
+                return Ok(token);
+            }
+            else
+            {
+                return NotFound("User not found");
+            }
+
+
+
+
+
         }
 
         public class UserInfo
