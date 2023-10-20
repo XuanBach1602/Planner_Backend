@@ -15,5 +15,6 @@ namespace Planner.Model
         public string PhoneNumber { get; set; } = string.Empty;
         [Required]
         public string Address { get; set; } = string.Empty;
+        public IFormFile? File { get; set; }
     }
 }

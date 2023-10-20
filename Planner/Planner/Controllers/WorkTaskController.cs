@@ -49,7 +49,7 @@ namespace Planner.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByPlanID()
+        public async Task<IActionResult> GetAll()
         {
             var WorkTasks = await _unitOfWork.WorkTask.GetAllAsync();
             if (WorkTasks == null)

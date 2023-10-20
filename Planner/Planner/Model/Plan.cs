@@ -13,7 +13,8 @@ namespace Planner.Model
 
         [ForeignKey("Users")]
         public string CreatedUserID { get; set; } = string.Empty;
-        public User? User { get; set; }
+        //[JsonIgnore]
+        //public User? User { get; set; }
 
     }
 }

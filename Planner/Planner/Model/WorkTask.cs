@@ -1,6 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Planner.Model
 {
@@ -23,15 +24,18 @@ namespace Planner.Model
         [ForeignKey("Plans")]
         public int PlanID { get; set; }
         [ForeignKey(nameof(PlanID))]
+        [JsonIgnore]
         public Plan? Plan { get; set; }
 
         [ForeignKey("Users")]
         public string CreatedUserID { get; set; }
         [ForeignKey(nameof(CreatedUserID))]
+        [JsonIgnore]
         public User? CreatedUser { get; set; }
 
         [ForeignKey("Users")]
         public string? AssignedUserID { get; set; }
+        [JsonIgnore]
         [ForeignKey(nameof(AssignedUserID))]
         public User? AssignedUser { get; set; }
 
