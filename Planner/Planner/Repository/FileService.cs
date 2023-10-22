@@ -57,7 +57,7 @@ namespace Planner.Repository
             string path = "";
             try
             {
-                if (file.Length > 0)
+                if (file != null)
                 {
                     path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "UploadFiles"));
                     if (!Directory.Exists(path))

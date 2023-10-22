@@ -26,7 +26,7 @@ namespace Planner.Controllers
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Address = user.Address,
+                //Address = user.Address,
                 PhoneNumber = user.PhoneNumber,
                 ImageUrl = user.ImgUrl
 
@@ -49,7 +49,7 @@ namespace Planner.Controllers
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Address = user.Address,
+                //Address = user.Address,
                 PhoneNumber = user.PhoneNumber,
                 ImageUrl = user.ImgUrl
             });
@@ -64,7 +64,7 @@ namespace Planner.Controllers
                 return BadRequest("The user's data is invalid");
             }
             user.PhoneNumber = userModel.PhoneNumber;
-            user.Address = userModel.Address;
+            //user.Address = userModel.Address;
             user.Email = userModel.Email;
             user.Name = userModel.Name;
             user.ImgUrl = userModel.ImageUrl;

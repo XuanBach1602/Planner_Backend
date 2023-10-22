@@ -11,21 +11,23 @@ namespace Planner.Model
         public int Id { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
-        [Required]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
         [Required]
         public string Status { get; set; } = string.Empty;
+        [Required]
+        public string Priority { get; set; } = "Medium";
         [Required]
         public DateTime StartDate { get; set; }
         [Required]
         public DateTime DueDate { get; set; }
+        public string? Attachment { get; set; }
 
         [Required]
-        [ForeignKey("Plans")]
-        public int PlanID { get; set; }
-        [ForeignKey(nameof(PlanID))]
+        [ForeignKey("Categories")]
+        public int CategoryID { get; set; }
+        [ForeignKey(nameof(CategoryID))]
         [JsonIgnore]
-        public Plan? Plan { get; set; }
+        public Category? Category { get; set; }
 
         [ForeignKey("Users")]
         public string CreatedUserID { get; set; }

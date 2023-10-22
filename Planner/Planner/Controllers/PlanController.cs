@@ -54,8 +54,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            var PlanModels = plans.Select(u => ConvertPlanToPlanModel(u));
-            return Ok(PlanModels);
+            //var PlanModels = plans.Select(u => ConvertPlanToPlanModel(u));
+            return Ok(plans);
 
         }
 
@@ -96,7 +96,7 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(ConvertPlanToPlanModel(plan));
+            return Ok(plan);
         }
 
 
@@ -109,19 +109,7 @@ namespace Planner.Controllers
             }
 
             var plans = await _unitOfWork.Plan.GetPlansByUserID(userID);
-            var PlanModels = plans.Select(p => ConvertPlanToPlanModel(p));
-            return Ok(PlanModels);
-        }
-
-        [NonAction]
-        public PlanModel ConvertPlanToPlanModel(Plan plan)
-        {
-            return new PlanModel
-            {
-                Id = plan.Id,
-                Name = plan.Name,
-                CreatedUserID = plan.CreatedUserID
-            };
+            return Ok(plans);
         }
 
     }

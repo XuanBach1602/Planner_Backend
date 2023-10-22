@@ -155,6 +155,28 @@ namespace Planner.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Planner.Model.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlanID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanID");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("Planner.Model.Plan", b =>
                 {
                     b.Property<int>("Id")
@@ -166,6 +188,9 @@ namespace Planner.Migrations
                     b.Property<string>("CreatedUserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPrivacy")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -183,10 +208,6 @@ namespace Planner.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -298,12 +319,17 @@ namespace Planner.Migrations
                     b.Property<string>("AssignedUserID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Attachment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedUserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DueDate")
@@ -313,8 +339,9 @@ namespace Planner.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PlanID")
-                        .HasColumnType("int");
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -327,9 +354,9 @@ namespace Planner.Migrations
 
                     b.HasIndex("AssignedUserID");
 
-                    b.HasIndex("CreatedUserID");
+                    b.HasIndex("CategoryID");
 
-                    b.HasIndex("PlanID");
+                    b.HasIndex("CreatedUserID");
 
                     b.ToTable("WorkTasks");
                 });
@@ -385,6 +412,17 @@ namespace Planner.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Planner.Model.Category", b =>
+                {
+                    b.HasOne("Planner.Model.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("Planner.Model.UserPlan", b =>
                 {
                     b.HasOne("Planner.Model.Plan", "Plan")
@@ -410,23 +448,23 @@ namespace Planner.Migrations
                         .WithMany()
                         .HasForeignKey("AssignedUserID");
 
+                    b.HasOne("Planner.Model.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Planner.Model.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Planner.Model.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("AssignedUser");
 
-                    b.Navigation("CreatedUser");
+                    b.Navigation("Category");
 
-                    b.Navigation("Plan");
+                    b.Navigation("CreatedUser");
                 });
 #pragma warning restore 612, 618
         }

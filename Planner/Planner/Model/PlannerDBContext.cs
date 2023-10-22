@@ -9,5 +9,6 @@ namespace Planner.Model
         public DbSet<Plan> Plans { get; set; }
         public DbSet<WorkTask> WorkTasks { get; set; }
         public DbSet<UserPlan> UserPlans { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

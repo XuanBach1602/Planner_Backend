@@ -53,12 +53,13 @@ namespace Planner.Repository
         public async Task<IdentityResult> SignUp(SignUpModel model)
         {
             string img_url = await fileService.UploadFile(model.File);
+            if (img_url == "") img_url = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
             var user = new User
             {
                 UserName = model.Email,
                 Name = model.Name,
                 Email = model.Email,
-                Address = model.Address,
+                //Address = model.Address,
                 PhoneNumber = model.PhoneNumber,
                 ImgUrl = img_url,
             };

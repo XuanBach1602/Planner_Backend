@@ -46,8 +46,8 @@ namespace Planner.Controllers
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
-                    PhoneNumber = user?.PhoneNumber ?? "",
-                    Address = user?.Address ?? ""
+                    PhoneNumber = user?.PhoneNumber ?? ""
+                    //Address = user?.Address ?? ""
                 };
                 var data = new { token, userInfo };
                 return Ok(data);
@@ -55,7 +55,7 @@ namespace Planner.Controllers
         }
 
         [HttpPost("SignUp")]
-        [Consumes("multipart/form-data")]
+        //[Consumes("multipart/form-data")]
         public async Task<IActionResult> SignUp([FromForm] SignUpModel model)
         {
             var result = await _authRepository.SignUp(model);
@@ -83,7 +83,7 @@ namespace Planner.Controllers
 
         [Authorize]
         [HttpPost("GetRefreshToken")]
-        public async Task<ActionResult<string>> RefreshToken()
+        public async Task<ActionResult> RefreshToken()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
