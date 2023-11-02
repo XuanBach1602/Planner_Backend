@@ -13,8 +13,8 @@ namespace Planner.Model
         public string Password { get; set; } = string.Empty;
         [Required]
         public string PhoneNumber { get; set; } = string.Empty;
-        //[Required]
-        //public string Address { get; set; } = string.Empty;
         public IFormFile? File { get; set; }
+        public string? Gender { get; set; } = "Male";
+        public DateTime? DateOfBirth { get; set; }
     }
 }

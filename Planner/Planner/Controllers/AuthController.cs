@@ -46,8 +46,8 @@ namespace Planner.Controllers
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
-                    PhoneNumber = user?.PhoneNumber ?? ""
-                    //Address = user?.Address ?? ""
+                    PhoneNumber = user?.PhoneNumber ?? "",
+                    ImgUrl = user.ImgUrl
                 };
                 var data = new { token, userInfo };
                 return Ok(data);
@@ -83,7 +83,7 @@ namespace Planner.Controllers
 
         [Authorize]
         [HttpPost("GetRefreshToken")]
-        public async Task<ActionResult> RefreshToken()
+        public ActionResult RefreshToken()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -102,7 +102,7 @@ namespace Planner.Controllers
                 {
                     return Unauthorized("Token expired.");
                 }
-                string token = _authRepository.CreateToken(user.Email);
+                string token = _authRepository.CreateToken(user.Email, user.Id);
                 var newRefreshToken = _authRepository.GenerateRefreshToken();
                 _authRepository.SetRefreshToken(newRefreshToken, user, HttpContext);
 
@@ -125,7 +125,7 @@ namespace Planner.Controllers
             public string Name { get; set; } = "";
             public string Email { get; set; } = "";
             public string PhoneNumber { get; set; } = "";
-            public string Address { get; set; } = "";
+            public string ImgUrl { get; set; } = "";
         }
 
 

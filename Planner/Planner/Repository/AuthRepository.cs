@@ -33,8 +33,8 @@ namespace Planner.Repository
             {
                 return string.Empty;
             }
-
-            return CreateToken(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            return CreateToken(model.Email, user.Id);
         }
 
         public async Task<bool> SignOut()
@@ -52,26 +52,24 @@ namespace Planner.Repository
 
         public async Task<IdentityResult> SignUp(SignUpModel model)
         {
-            string img_url = await fileService.UploadFile(model.File);
-            if (img_url == "") img_url = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
+            //if (img_url == "") img_url = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
             var user = new User
             {
                 UserName = model.Email,
                 Name = model.Name,
                 Email = model.Email,
-                //Address = model.Address,
-                PhoneNumber = model.PhoneNumber,
-                ImgUrl = img_url,
+                PhoneNumber = model.PhoneNumber
             };
-            var token = await _userManager.CreateAsync(user, model.Password);
-            return token;
+            var result = await _userManager.CreateAsync(user, model.Password);
+            return result;
         }
 
-        public string CreateToken(string email)
+        public string CreateToken(string email, string userId)
         {
             var authClaims = new List<Claim>
             {
-                new Claim(System.Security.Claims.ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

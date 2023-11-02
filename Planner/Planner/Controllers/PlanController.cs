@@ -107,6 +107,11 @@ namespace Planner.Controllers
             {
                 return NotFound("UserID is required");
             }
+            var user = await _unitOfWork.User.GetFirstOrDefaultAsync(x => x.Id == userID);
+            if (user == null)
+            {
+                return NotFound("User is not exist");
+            }
 
             var plans = await _unitOfWork.Plan.GetPlansByUserID(userID);
             return Ok(plans);

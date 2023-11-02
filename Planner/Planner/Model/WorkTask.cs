@@ -17,8 +17,10 @@ namespace Planner.Model
         [Required]
         public string Priority { get; set; } = "Medium";
         [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
         public string? Attachment { get; set; }
 

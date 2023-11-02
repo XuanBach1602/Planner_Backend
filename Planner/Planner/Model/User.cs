@@ -12,5 +12,8 @@ namespace Planner.Model
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime TokenCreated { get; set; }
         public DateTime TokenExpires { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? DateOfBirth { get; set; }
+        public string Gender { get; set; } = string.Empty;
     }
 }

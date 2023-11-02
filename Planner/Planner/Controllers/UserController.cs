@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Planner.Model;
 using Planner.Repository.IRepository;
 
 namespace Planner.Controllers
@@ -7,10 +8,12 @@ namespace Planner.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;
-        public UserController(IUnitOfWork unitOfWork)
+        public UserController(IUnitOfWork unitOfWork, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -21,16 +24,7 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            var usersModel = users.Select(user => new UserModel
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                //Address = user.Address,
-                PhoneNumber = user.PhoneNumber,
-                ImageUrl = user.ImgUrl
-
-            });
+            var usersModel = users.Select(user => ConvertToUserModel(user)).ToList();
 
             return Ok(usersModel);
         }
@@ -44,30 +38,25 @@ namespace Planner.Controllers
                 return BadRequest("Can not find the user");
             }
 
-            return Ok(new UserModel
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                //Address = user.Address,
-                PhoneNumber = user.PhoneNumber,
-                ImageUrl = user.ImgUrl
-            });
+            return Ok(ConvertToUserModel(user));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UserModel userModel)
+        public async Task<IActionResult> Update(string id, [FromForm] UpdateModel update)
         {
             var user = await _unitOfWork.User.GetFirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
                 return BadRequest("The user's data is invalid");
             }
-            user.PhoneNumber = userModel.PhoneNumber;
-            //user.Address = userModel.Address;
-            user.Email = userModel.Email;
-            user.Name = userModel.Name;
-            user.ImgUrl = userModel.ImageUrl;
+            var ImgUrl = await _fileService.UploadFile(update.File, "UploadFiles/Avatars", id);
+            user.ImgUrl = ImgUrl;
+            user.PhoneNumber = update.PhoneNumber;
+            user.Email = update.Email;
+            user.Name = update.Name;
+            user.Gender = update.Gender;
+            user.DateOfBirth = update.DateOfBirth;
+
             _unitOfWork.User.Update(user);
             try
             {
@@ -99,9 +88,38 @@ namespace Planner.Controllers
             public string Id { get; set; } = string.Empty;
             public string Name { get; set; } = string.Empty;
             public string Email { get; set; } = string.Empty;
-            public string Address { get; set; } = string.Empty;
             public string PhoneNumber { get; set; } = string.Empty;
             public string ImageUrl { get; set; } = string.Empty;
+            public string Gender { get; set; } = string.Empty;
+            public string DateOfBirth { get; set; } = string.Empty;
+        }
+
+        public class UpdateModel
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string Gender { get; set; } = string.Empty;
+            public DateTime DateOfBirth { get; set; }
+            public IFormFile? File { get; set; }
+        }
+
+        [NonAction]
+        public UserModel ConvertToUserModel(User user)
+        {
+            return new UserModel
+            {
+
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ImageUrl = user.ImgUrl,
+                Gender = user.Gender,
+                DateOfBirth = user.DateOfBirth != null ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : "",
+            };
+
         }
 
     }

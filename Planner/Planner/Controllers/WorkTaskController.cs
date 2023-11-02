@@ -56,8 +56,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-
-            return Ok(WorkTasks);
+            var WorkTaskFormatted = WorkTasks.Select(ConvertToFormatted).ToList();
+            return Ok(WorkTaskFormatted);
 
         }
 
@@ -98,7 +98,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            return Ok(WorkTask);
+            var WorkTaskFormatted = ConvertToFormatted(WorkTask);
+            return Ok(WorkTaskFormatted);
             ;
         }
 
@@ -110,37 +111,57 @@ namespace Planner.Controllers
                 return BadRequest("The field ID is required");
             }
             var worktasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.AssignedUserID == userID);
-            return Ok(worktasks);
+            var WorkTaskFormatted = worktasks.Select(ConvertToFormatted).ToList();
+            return Ok(WorkTaskFormatted);
         }
 
         [HttpGet("GetByCategoryID/{categoryID}")]
-        public async Task<IActionResult> GetTasksByPlanID(int? categoryID)
+        public async Task<IActionResult> GetTasksByCategoryID(int? categoryID)
         {
             if (categoryID == null)
             {
-                return BadRequest("PlanID is required");
+                return BadRequest("Category is required");
             }
 
             var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.CategoryID == categoryID);
-            return Ok(tasks);
+            var WorkTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
+            return Ok(WorkTaskFormatted);
+        }
+        public class WorkTaskFormatted
+        {
+            public int Id { get; set; }
+            public required string Name { get; set; }
+            public string? Description { get; set; }
+            public required string Status { get; set; }
+            public required string Priority { get; set; }
+            public required string StartDate { get; set; }
+            public required string DueDate { get; set; }
+            public string? Attachment { get; set; }
+            public int CategoryId { get; set; }
+            public required string CreatedUserId { get; set; }
+            public string? AssignedUserId { get; set; }
+            // Other properties if needed
         }
 
-        //[NonAction]
-        //public WorkTaskModel ConvertWorkTaskToWorkTaskModel(WorkTask WorkTask)
-        //{
-        //    return new WorkTaskModel
-        //    {
-        //        Id = WorkTask.Id,
-        //        Name = WorkTask.Name,
-        //        Description = WorkTask.Description,
-        //        Status = WorkTask.Status,
-        //        StartDate = WorkTask.StartDate,
-        //        DueDate = WorkTask.DueDate,
-        //        PlanID = WorkTask.PlanID,
-        //        CreatedUserID = WorkTask.CreatedUserID,
-        //        AssignedUserID = WorkTask.AssignedUserID
-        //    };
-        //}
+        private WorkTaskFormatted ConvertToFormatted(WorkTask workTask)
+        {
+            return new WorkTaskFormatted
+            {
+                Id = workTask.Id,
+                Name = workTask.Name,
+                Description = workTask.Description,
+                Status = workTask.Status,
+                Priority = workTask.Priority,
+                StartDate = workTask.StartDate.ToString("yyyy-MM-dd"),
+                DueDate = workTask.DueDate.ToString("yyyy-MM-dd"),
+                Attachment = workTask.Attachment,
+                CategoryId = workTask.CategoryID,
+                CreatedUserId = workTask.CreatedUserID,
+                AssignedUserId = workTask.AssignedUserID,
+            };
+        }
 
     }
+
+
 }

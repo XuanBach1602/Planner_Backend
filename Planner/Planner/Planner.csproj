@@ -30,6 +30,8 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="UploadFiles\Avatars\" />
+    <Folder Include="UploadFiles\Documents\" />
   </ItemGroup>
 
 </Project>

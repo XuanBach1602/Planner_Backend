@@ -37,8 +37,6 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.Configure<IdentityOptions>(option =>
 {
     option.Password.RequireDigit = false;
-    option.Password.RequireDigit = false; // Không bắt phải có số
-    option.Password.RequireDigit = false; // Không bắt phải có số
     option.Password.RequireLowercase = false; // Không bắt phải có chữ thường
     option.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
     option.Password.RequireUppercase = false; // Không bắt buộc chữ in
@@ -55,7 +53,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -91,11 +89,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.UseRouting();
+
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseCors();
 
