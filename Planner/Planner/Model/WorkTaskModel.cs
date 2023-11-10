@@ -21,5 +21,7 @@ namespace Planner.Model
         [Required]
         public string CreatedUserID { get; set; } = string.Empty;
         public string? AssignedUserID { get; set; }
+        public List<IFormFile>? AttachedFiles { get; set; }
+
     }
 }

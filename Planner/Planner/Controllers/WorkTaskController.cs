@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Model;
 using Planner.Repository.IRepository;
+using System.ComponentModel.DataAnnotations;
 
 namespace Planner.Controllers
 {
@@ -11,18 +12,24 @@ namespace Planner.Controllers
     public class WorkTaskController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
 
-        public WorkTaskController(IUnitOfWork unitOfWork)
+        public WorkTaskController(IUnitOfWork unitOfWork, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(WorkTask workTask)
+        public async Task<IActionResult> Add([FromForm] WorkTaskInput workTaskInput)
         {
+            var workTask = await ConvertToWorkTask(workTaskInput);
             await _unitOfWork.WorkTask.AddAsync(workTask);
             try
             {
+                await _unitOfWork.Save();
+                var fileList = workTaskInput.AttachedFiles;
+                await _unitOfWork.UploadFile.AddMultipleFiles(fileList, workTask.Id);
                 await _unitOfWork.Save();
                 return Ok(new { message = "Add workTask successfully" });
             }
@@ -34,11 +41,15 @@ namespace Planner.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(WorkTask WorkTask)
+        public async Task<IActionResult> Update([FromForm] WorkTaskInput workTaskInput)
         {
-            _unitOfWork.WorkTask.Update(WorkTask);
+            var workTask = await ConvertToWorkTask(workTaskInput);
+            _unitOfWork.WorkTask.Update(workTask);
             try
             {
+                var fileList = workTaskInput.AttachedFiles;
+                await _unitOfWork.UploadFile.AddMultipleFiles(fileList, workTask.Id);
+                _unitOfWork.UploadFile.DeleteMultipleFile(workTask.Id);
                 await _unitOfWork.Save();
                 return Ok(new { message = "Update workTask succesfully" });
             }
@@ -62,9 +73,9 @@ namespace Planner.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Remove(int? id)
+        public async Task<IActionResult> Remove(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return BadRequest();
             }
@@ -74,6 +85,7 @@ namespace Planner.Controllers
                 return NotFound();
             }
             _unitOfWork.WorkTask.Remove(WorkTask);
+            _unitOfWork.UploadFile.DeleteMultipleFile(id);
             try
             {
                 await _unitOfWork.Save();
@@ -127,7 +139,22 @@ namespace Planner.Controllers
             var WorkTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
             return Ok(WorkTaskFormatted);
         }
-        public class WorkTaskFormatted
+
+        [HttpGet("GetByPlanID/{planID}")]
+        public async Task<IActionResult> GetTasksByPlanID(int planID)
+        {
+            var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.PlanId == planID);
+            var workTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
+            return Ok(workTaskFormatted);
+        }
+
+        [HttpGet("GetCountOfFilteredTask/{planID}")]
+        public async Task<IActionResult> GetCountOfFilteredTask(int planID)
+        {
+            var count = await _unitOfWork.WorkTask.GetCountOfFilteredTask(planID);
+            return Ok(count);
+        }
+        public class WorkTaskOutput
         {
             public int Id { get; set; }
             public required string Name { get; set; }
@@ -136,16 +163,18 @@ namespace Planner.Controllers
             public required string Priority { get; set; }
             public required string StartDate { get; set; }
             public required string DueDate { get; set; }
-            public string? Attachment { get; set; }
             public int CategoryId { get; set; }
+            public int PlanId { get; set; }
             public required string CreatedUserId { get; set; }
             public string? AssignedUserId { get; set; }
+            public string ModifiedDate { get; set; }
+            public List<UploadFile> Files { get; set; }
             // Other properties if needed
         }
 
-        private WorkTaskFormatted ConvertToFormatted(WorkTask workTask)
+        private WorkTaskOutput ConvertToFormatted(WorkTask workTask)
         {
-            return new WorkTaskFormatted
+            return new WorkTaskOutput
             {
                 Id = workTask.Id,
                 Name = workTask.Name,
@@ -154,13 +183,57 @@ namespace Planner.Controllers
                 Priority = workTask.Priority,
                 StartDate = workTask.StartDate.ToString("yyyy-MM-dd"),
                 DueDate = workTask.DueDate.ToString("yyyy-MM-dd"),
-                Attachment = workTask.Attachment,
                 CategoryId = workTask.CategoryID,
+                PlanId = workTask.PlanId,
                 CreatedUserId = workTask.CreatedUserID,
                 AssignedUserId = workTask.AssignedUserID,
+                Files = _unitOfWork.UploadFile.GetFilesByWorkTaskID(workTask.Id),
+                ModifiedDate = workTask.ModifiedDate.ToString()
             };
         }
 
+        public class WorkTaskInput
+        {
+            public int? Id { get; set; } = 0;
+            [Required]
+            public string Name { get; set; } = string.Empty;
+            [Required]
+            public string Description { get; set; } = string.Empty;
+            [Required]
+            public string Status { get; set; } = string.Empty;
+            [Required]
+            public DateTime StartDate { get; set; }
+            [Required]
+            public DateTime DueDate { get; set; }
+
+            [Required]
+            public int CategoryID { get; set; }
+            [Required]
+            public int PlanID { get; set; }
+            [Required]
+            public string CreatedUserID { get; set; } = string.Empty;
+            public string? AssignedUserID { get; set; }
+            public List<IFormFile>? AttachedFiles { get; set; }
+
+        }
+        private async Task<WorkTask> ConvertToWorkTask(WorkTaskInput model)
+        {
+            return new WorkTask
+            {
+                Id = (int)((model.Id == null) ? 0 : model.Id),
+                Name = model.Name,
+                Description = model.Description,
+                Status = model.Status,
+                CreatedUserID = model.CreatedUserID,
+                AssignedUserID = model.AssignedUserID,
+                //Attachment = await _fileService.PostMultiFileAsync(model.AttachedFiles, "UploadFiles/Documents", model.CreatedUserID),
+                StartDate = model.StartDate,
+                DueDate = model.DueDate,
+                CategoryID = model.CategoryID,
+                PlanId = model.PlanID
+
+            };
+        }
     }
 
 

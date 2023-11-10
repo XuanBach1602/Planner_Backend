@@ -28,6 +28,7 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUploadFileRepository, UploadFileRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //Identity

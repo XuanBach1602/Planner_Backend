@@ -201,6 +201,32 @@ namespace Planner.Migrations
                     b.ToTable("Plans");
                 });
 
+            modelBuilder.Entity("Planner.Model.UploadFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkTaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkTaskId");
+
+                    b.ToTable("UploadFiles");
+                });
+
             modelBuilder.Entity("Planner.Model.User", b =>
                 {
                     b.Property<string>("Id")
@@ -326,9 +352,6 @@ namespace Planner.Migrations
                     b.Property<string>("AssignedUserID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Attachment")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CategoryID")
                         .HasColumnType("int");
 
@@ -342,9 +365,15 @@ namespace Planner.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("date");
 
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -430,6 +459,17 @@ namespace Planner.Migrations
                     b.Navigation("Plan");
                 });
 
+            modelBuilder.Entity("Planner.Model.UploadFile", b =>
+                {
+                    b.HasOne("Planner.Model.WorkTask", "WorkTask")
+                        .WithMany("Files")
+                        .HasForeignKey("WorkTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkTask");
+                });
+
             modelBuilder.Entity("Planner.Model.UserPlan", b =>
                 {
                     b.HasOne("Planner.Model.Plan", "Plan")
@@ -472,6 +512,11 @@ namespace Planner.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("CreatedUser");
+                });
+
+            modelBuilder.Entity("Planner.Model.WorkTask", b =>
+                {
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

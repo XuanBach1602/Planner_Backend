@@ -22,7 +22,10 @@ namespace Planner.Model
         [Required]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
-        public string? Attachment { get; set; }
+        public DateTime? ModifiedDate { get; set; } = DateTime.Now;
+        public int PlanId { get; set; }
+
+        //public string? Attachment { get; set; }
 
         [Required]
         [ForeignKey("Categories")]
@@ -42,6 +45,8 @@ namespace Planner.Model
         [JsonIgnore]
         [ForeignKey(nameof(AssignedUserID))]
         public User? AssignedUser { get; set; }
+
+        public ICollection<UploadFile> Files { get; set; }
 
 
     }

@@ -37,8 +37,8 @@ namespace Planner.Controllers
             {
                 return BadRequest("Can not find the user");
             }
-
-            return Ok(ConvertToUserModel(user));
+            var userInfo = ConvertToUserModel(user);
+            return Ok(userInfo);
         }
 
         [HttpPut("{id}")]
@@ -49,7 +49,8 @@ namespace Planner.Controllers
             {
                 return BadRequest("The user's data is invalid");
             }
-            var ImgUrl = await _fileService.UploadFile(update.File, "UploadFiles/Avatars", id);
+            var ImgUrl = await _fileService.UploadFile(update.File);
+            _fileService.DeleteFile(user.ImgUrl);
             user.ImgUrl = ImgUrl;
             user.PhoneNumber = update.PhoneNumber;
             user.Email = update.Email;
@@ -89,7 +90,7 @@ namespace Planner.Controllers
             public string Name { get; set; } = string.Empty;
             public string Email { get; set; } = string.Empty;
             public string PhoneNumber { get; set; } = string.Empty;
-            public string ImageUrl { get; set; } = string.Empty;
+            public string ImgUrl { get; set; } = string.Empty;
             public string Gender { get; set; } = string.Empty;
             public string DateOfBirth { get; set; } = string.Empty;
         }
@@ -115,7 +116,7 @@ namespace Planner.Controllers
                 Name = user.Name,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                ImageUrl = user.ImgUrl,
+                ImgUrl = user.ImgUrl,
                 Gender = user.Gender,
                 DateOfBirth = user.DateOfBirth != null ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : "",
             };

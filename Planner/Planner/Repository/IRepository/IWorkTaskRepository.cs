@@ -1,5 +1,6 @@
 ﻿using Planner.Model;
 using System.Linq.Expressions;
+using static WorkTaskner.Repository.WorkTaskRepository;
 
 namespace Planner.Repository.IRepository
 {
@@ -10,5 +11,6 @@ namespace Planner.Repository.IRepository
         Task<WorkTask> GetFirstOrDefaultAsync(Expression<Func<WorkTask, bool>> filter, string? includeProperties = null);
         void Update(WorkTask WorkTask);
         void Remove(WorkTask WorkTask);
+        public Task<CountTasks> GetCountOfFilteredTask(int planId);
     }
 }

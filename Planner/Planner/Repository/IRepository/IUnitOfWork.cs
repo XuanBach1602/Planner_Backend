@@ -6,6 +6,7 @@
         public IWorkTaskRepository WorkTask { get; }
         public IUserRepository User { get; }
         public ICategoryRepository Category { get; }
+        public IUploadFileRepository UploadFile { get; }
         Task Save();
     }
 }

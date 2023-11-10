@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Repository.IRepository;
-using System.Security.Claims;
 
 namespace Planner.Controllers
 {
@@ -14,43 +12,32 @@ namespace Planner.Controllers
         {
             _fileService = fileService;
         }
-        [HttpGet("avatar/{fileName}")]
-        [Authorize]
-        public async Task<IActionResult> GetAvatar(string fileName)
+        //[HttpGet("avatar/{fileName}")]
+        //public async Task<IActionResult> GetAvatar(string url)
+        //{
+        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        //    if (userId != null)
+        //    {
+        //        // Sử dụng userId để xử lý tên file và tải ảnh
+        //        var fileBytes = await _fileService.DownloadFileByUrl(url);
+
+        //        if (fileBytes != null)
+        //        {
+        //            return File(fileBytes, "image/jpeg");
+        //        }
+        //    }
+
+        //    return NotFound("File not found");
+        //}
+        [HttpGet]
+        public async Task<IActionResult> GetDocument(string url)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId != null)
+            var fileBytes = await _fileService.DownloadFileByUrl(url);
+            if (fileBytes != null)
             {
-                // Sử dụng userId để xử lý tên file và tải ảnh
-                var fileBytes = await _fileService.DownloadFileById(fileName, "UploadFiles/Avatars", userId);
-
-                if (fileBytes != null)
-                {
-                    return File(fileBytes, "image/jpeg");
-                }
-            }
-
-            return NotFound("File not found");
-        }
-        [Authorize]
-        [HttpGet("document/{fileName}")]
-        public async Task<IActionResult> GetDocument(string fileName)
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId != null)
-            {
-                var fileBytes = await _fileService.DownloadFileById(fileName, "UploadFiles/Documents", userId);
-                if (fileBytes != null)
-                {
-                    string contentType = GetContentType(fileName);
-                    return File(fileBytes, contentType);
-                }
-                else
-                {
-                    return NotFound("File not found");
-                }
+                string contentType = GetContentType(url);
+                return File(fileBytes, contentType);
             }
 
             return NotFound();
@@ -74,9 +61,12 @@ namespace Planner.Controllers
                     return "image/png";
                 case ".txt":
                     return "text/plain";
+                case ".docx":
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // Loại docx
                 default:
                     return "application/octet-stream"; // Loại mặc định nếu không xác định được
             }
         }
+
     }
 }

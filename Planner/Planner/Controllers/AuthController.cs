@@ -47,7 +47,9 @@ namespace Planner.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     PhoneNumber = user?.PhoneNumber ?? "",
-                    ImgUrl = user.ImgUrl
+                    ImgUrl = user.ImgUrl,
+                    Gender = user.Gender,
+                    DateOfBirth = user.DateOfBirth == null ? null : user.DateOfBirth.Value.ToString("yyyy-MM-dd"),
                 };
                 var data = new { token, userInfo };
                 return Ok(data);
@@ -126,6 +128,9 @@ namespace Planner.Controllers
             public string Email { get; set; } = "";
             public string PhoneNumber { get; set; } = "";
             public string ImgUrl { get; set; } = "";
+
+            public string Gender { get; set; } = "";
+            public string DateOfBirth { get; set; } = "";
         }
 
 

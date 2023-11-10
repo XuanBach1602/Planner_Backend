@@ -10,6 +10,7 @@ namespace Planner.Model
         public DbSet<WorkTask> WorkTasks { get; set; }
         public DbSet<UserPlan> UserPlans { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<UploadFile> UploadFiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,6 +24,11 @@ namespace Planner.Model
             builder.Entity<User>()
                 .Property(x => x.DateOfBirth)
                 .HasColumnType("date");
+            builder.Entity<WorkTask>()
+                .HasMany<UploadFile>(f => f.Files)
+                .WithOne(f => f.WorkTask)
+                .HasForeignKey(f => f.WorkTaskId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

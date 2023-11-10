@@ -31,7 +31,7 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="UploadFiles\Avatars\" />
-    <Folder Include="UploadFiles\Documents\" />
+    <Folder Include="UploadFiles\TaskFiles\" />
   </ItemGroup>
 
 </Project>
