@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Planner.Repository.IRepository;
+using Planner.Services;
 
 namespace Planner.Controllers
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Planner.Model;
 using Planner.Repository.IRepository;
+using Planner.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace Planner.Controllers
@@ -12,12 +13,12 @@ namespace Planner.Controllers
     public class WorkTaskController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IFileService _fileService;
+        private readonly IFilterService _filterService;
 
-        public WorkTaskController(IUnitOfWork unitOfWork, IFileService fileService)
+        public WorkTaskController(IUnitOfWork unitOfWork, IFilterService filterService)
         {
             _unitOfWork = unitOfWork;
-            _fileService = fileService;
+            _filterService = filterService;
         }
 
         [HttpPost]
@@ -59,6 +60,22 @@ namespace Planner.Controllers
             }
         }
 
+        [HttpPut("Status/{Id}")]
+        public async Task<IActionResult> StatusUpdate(int Id, [FromBody] string status)
+        {
+            var workTask = await _unitOfWork.WorkTask.GetFirstOrDefaultAsync(x => x.Id == Id);
+            workTask.Status = status;
+            try
+            {
+                await _unitOfWork.Save();
+                return Ok("Update status successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -67,8 +84,8 @@ namespace Planner.Controllers
             {
                 return NotFound();
             }
-            var WorkTaskFormatted = WorkTasks.Select(ConvertToFormatted).ToList();
-            return Ok(WorkTaskFormatted);
+            //var WorkTaskFormatted = WorkTasks.Select(ConvertToFormatted).ToList();
+            return Ok(WorkTasks);
 
         }
 
@@ -111,6 +128,7 @@ namespace Planner.Controllers
                 return NotFound();
             }
             var WorkTaskFormatted = ConvertToFormatted(WorkTask);
+
             return Ok(WorkTaskFormatted);
             ;
         }
@@ -123,8 +141,8 @@ namespace Planner.Controllers
                 return BadRequest("The field ID is required");
             }
             var worktasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.AssignedUserID == userID);
-            var WorkTaskFormatted = worktasks.Select(ConvertToFormatted).ToList();
-            return Ok(WorkTaskFormatted);
+            //var WorkTaskFormatted = worktasks.Select(ConvertToFormatted).ToList();
+            return Ok(worktasks);
         }
 
         [HttpGet("GetByCategoryID/{categoryID}")]
@@ -136,16 +154,17 @@ namespace Planner.Controllers
             }
 
             var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.CategoryID == categoryID);
-            var WorkTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
-            return Ok(WorkTaskFormatted);
+            //var WorkTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
+            return Ok(tasks);
         }
 
         [HttpGet("GetByPlanID/{planID}")]
-        public async Task<IActionResult> GetTasksByPlanID(int planID)
+        public async Task<IActionResult> GetTasksByPlanID(int planID, string? due, string? priority, string? progress)
         {
             var tasks = await _unitOfWork.WorkTask.GetAllAsync(x => x.PlanId == planID);
-            var workTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
-            return Ok(workTaskFormatted);
+            tasks = _filterService.FilterWorkTask(tasks, due, priority, progress);
+            //var workTaskFormatted = tasks.Select(ConvertToFormatted).ToList();
+            return Ok(tasks);
         }
 
         [HttpGet("GetCountOfFilteredTask/{planID}")]
@@ -169,11 +188,13 @@ namespace Planner.Controllers
             public string? AssignedUserId { get; set; }
             public string ModifiedDate { get; set; }
             public List<UploadFile> Files { get; set; }
+            //public string CategoryName { get; set; } = string.Empty;
             // Other properties if needed
         }
 
         private WorkTaskOutput ConvertToFormatted(WorkTask workTask)
         {
+            //var category = await _unitOfWork.Category.GetFirstOrDefaultAsync(x => x.Id == workTask.CategoryID);
             return new WorkTaskOutput
             {
                 Id = workTask.Id,
@@ -189,6 +210,7 @@ namespace Planner.Controllers
                 AssignedUserId = workTask.AssignedUserID,
                 Files = _unitOfWork.UploadFile.GetFilesByWorkTaskID(workTask.Id),
                 ModifiedDate = workTask.ModifiedDate.ToString()
+                //CategoryName = category.Name
             };
         }
 

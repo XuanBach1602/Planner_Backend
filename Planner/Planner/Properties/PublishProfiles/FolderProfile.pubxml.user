@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Release\net7.0\publish\</_PublishTargetUrl>
+    <History>True|2023-11-12T17:19:22.9630190Z;True|2023-11-12T12:57:22.5576715+07:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

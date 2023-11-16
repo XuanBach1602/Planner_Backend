@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
+using Planner.Services;
 using System.Linq.Expressions;
 
 namespace WorkTaskner.Repository
@@ -20,9 +21,9 @@ namespace WorkTaskner.Repository
             await _context.WorkTasks.AddAsync(WorkTask);
         }
 
-        public async Task<IEnumerable<WorkTask>> GetAllAsync(Expression<Func<WorkTask, bool>>? filter = null, string? includeProperties = null)
+        public async Task<IEnumerable<WorkTaskOutput>> GetAllAsync(Expression<Func<WorkTask, bool>>? filter = null, string? includeProperties = null)
         {
-            IQueryable<WorkTask> query = _context.WorkTasks;
+            IQueryable<WorkTask> query = _context.WorkTasks.Include(wt => wt.Category).Include(wt => wt.Files);
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -35,8 +36,9 @@ namespace WorkTaskner.Repository
                     query = query.Include(property);
                 }
             }
-
-            return await query.ToListAsync();
+            var workTaskList = await query.ToListAsync();
+            var formattedWorkTaskList = workTaskList.Select(ConvertToFormatted);
+            return formattedWorkTaskList;
         }
 
         public async Task<WorkTask> GetFirstOrDefaultAsync(Expression<Func<WorkTask, bool>> filter, string? includeProperties = null)
@@ -58,9 +60,9 @@ namespace WorkTaskner.Repository
         {
             var tasks = await GetAllAsync(x => x.PlanId == planId);
             var notStartedTask = tasks.Where(x => x.Status == "Not started");
-            var inProgressTask = tasks.Where(x => x.Status == "In progress" && x.DueDate >= DateTime.Now);
+            var inProgressTask = tasks.Where(x => x.Status == "In progress" && DateTime.Parse(x.DueDate) >= DateTime.Now);
             var completedTask = tasks.Where(x => x.Status == "Completed");
-            var lateTask = tasks.Where(x => x.Status == "In progress" && x.DueDate < DateTime.Now);
+            var lateTask = tasks.Where(x => x.Status == "In progress" && DateTime.Parse(x.DueDate) < DateTime.Now);
             return new CountTasks
             {
                 NotStartedTasksCount = notStartedTask.Count(),
@@ -88,6 +90,44 @@ namespace WorkTaskner.Repository
             public int LateTasksCount { get; set; }
         }
 
+        //public class WorkTaskOutput
+        //{
+        //    public int Id { get; set; }
+        //    public required string Name { get; set; }
+        //    public string? Description { get; set; }
+        //    public required string Status { get; set; }
+        //    public required string Priority { get; set; }
+        //    public required string StartDate { get; set; }
+        //    public required string DueDate { get; set; }
+        //    public int CategoryId { get; set; }
+        //    public int PlanId { get; set; }
+        //    public required string CreatedUserId { get; set; }
+        //    public string? AssignedUserId { get; set; }
+        //    public string ModifiedDate { get; set; }
+        //    public List<UploadFile> Files { get; set; }
+        //    public string CategoryName { get; set; } = string.Empty;
+        //}
+
+        private WorkTaskOutput ConvertToFormatted(WorkTask workTask)
+        {
+            return new WorkTaskOutput
+            {
+                Id = workTask.Id,
+                Name = workTask.Name,
+                Description = workTask.Description,
+                Status = workTask.Status,
+                Priority = workTask.Priority,
+                StartDate = workTask.StartDate.ToString("yyyy-MM-dd"),
+                DueDate = workTask.DueDate.ToString("yyyy-MM-dd"),
+                CategoryId = workTask.CategoryID,
+                PlanId = workTask.PlanId,
+                CreatedUserId = workTask.CreatedUserID,
+                AssignedUserId = workTask.AssignedUserID,
+                Files = workTask.Files.ToList(),
+                ModifiedDate = workTask.ModifiedDate.ToString(),
+                CategoryName = workTask.Category.Name
+            };
+        }
 
 
 

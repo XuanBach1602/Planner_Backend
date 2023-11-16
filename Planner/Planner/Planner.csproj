@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UploadFiles\Avatars\**" />
+    <Compile Remove="UploadFiles\TaskFiles\**" />
+    <Content Remove="UploadFiles\Avatars\**" />
+    <Content Remove="UploadFiles\TaskFiles\**" />
+    <EmbeddedResource Remove="UploadFiles\Avatars\**" />
+    <EmbeddedResource Remove="UploadFiles\TaskFiles\**" />
+    <None Remove="UploadFiles\Avatars\**" />
+    <None Remove="UploadFiles\TaskFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
@@ -30,8 +41,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="UploadFiles\Avatars\" />
-    <Folder Include="UploadFiles\TaskFiles\" />
   </ItemGroup>
 
 </Project>

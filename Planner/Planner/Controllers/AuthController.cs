@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace Planner.Controllers
 {
-    [Route("/auth")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : Controller
     {
@@ -21,6 +21,12 @@ namespace Planner.Controllers
             _plannerDbContext = plannerDbContext;
             _userManager = userManager;
 
+        }
+
+        [HttpGet("Test")]
+        public IActionResult Get()
+        {
+            return Ok("ok");
         }
 
         [HttpPost("SignIn")]
@@ -60,6 +66,11 @@ namespace Planner.Controllers
         //[Consumes("multipart/form-data")]
         public async Task<IActionResult> SignUp([FromForm] SignUpModel model)
         {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                return BadRequest(new String[] { "Email is already exist" });
+            }
             var result = await _authRepository.SignUp(model);
             if (result.Succeeded)
             {

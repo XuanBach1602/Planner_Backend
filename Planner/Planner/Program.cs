@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Planner.Model;
 using Planner.Repository;
 using Planner.Repository.IRepository;
+using Planner.Services;
 using System.Text;
 using WorkTaskner.Repository;
 
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUploadFileRepository, UploadFileRepository>();
+builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //Identity
