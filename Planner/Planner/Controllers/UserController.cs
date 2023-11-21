@@ -73,17 +73,26 @@ namespace Planner.Controllers
         }
 
         [HttpGet("GetByPlanID/{planID}")]
-        public async Task<IActionResult> GetByPlanID(int? planID)
+        public async Task<IActionResult> GetByPlanID(int planID)
         {
-            if (planID == null)
-            {
-                return BadRequest("PlanID is required");
-            }
-
-            var user = await _unitOfWork.User.GetUsersByPlanID(planID.Value);
+            var user = await _unitOfWork.User.GetUsersByPlanID(planID);
             return Ok(user);
 
         }
+
+        [HttpGet("GetByEmail/{email}")]
+        public async Task<IActionResult> GetByEmail(string email)
+        {
+            var user = await _unitOfWork.User.GetFirstOrDefaultAsync(x => x.Email == email);
+            if (user == null)
+            {
+                return StatusCode(204, new { message = "Not found" });
+            }
+            var userModel = ConvertToUserModel(user);
+            return Ok(userModel);
+        }
+
+
 
         public class UserModel
         {

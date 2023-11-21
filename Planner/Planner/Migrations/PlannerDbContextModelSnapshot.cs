@@ -177,6 +177,53 @@ namespace Planner.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Planner.Model.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceivedUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ResponseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SendedUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("ReceivedUserId");
+
+                    b.HasIndex("SendedUserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Planner.Model.Plan", b =>
                 {
                     b.Property<int>("Id")
@@ -328,6 +375,10 @@ namespace Planner.Migrations
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -457,6 +508,33 @@ namespace Planner.Migrations
                         .IsRequired();
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Planner.Model.Notification", b =>
+                {
+                    b.HasOne("Planner.Model.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planner.Model.User", "ReceivedUser")
+                        .WithMany()
+                        .HasForeignKey("ReceivedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Planner.Model.User", "SendedUser")
+                        .WithMany()
+                        .HasForeignKey("SendedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("ReceivedUser");
+
+                    b.Navigation("SendedUser");
                 });
 
             modelBuilder.Entity("Planner.Model.UploadFile", b =>

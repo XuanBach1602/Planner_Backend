@@ -7,6 +7,8 @@
         public IUserRepository User { get; }
         public ICategoryRepository Category { get; }
         public IUploadFileRepository UploadFile { get; }
+        public IUserPlanRepository UserPlan { get; }
+        public INotificationRepository Notification { get; }
         Task Save();
     }
 }

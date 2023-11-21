@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -31,11 +30,12 @@ namespace Planner.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TokenCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TokenExpires = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "date", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -63,6 +63,7 @@ namespace Planner.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPrivacy = table.Column<bool>(type: "bit", nullable: false),
                     CreatedUserID = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -177,6 +178,37 @@ namespace Planner.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReceivedUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SendedUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResponseTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_ReceivedUserId",
+                        column: x => x.ReceivedUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_SendedUserId",
+                        column: x => x.SendedUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -203,7 +235,8 @@ namespace Planner.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlanId = table.Column<int>(type: "int", nullable: false)
+                    PlanId = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,10 +262,13 @@ namespace Planner.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "date", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PlanId = table.Column<int>(type: "int", nullable: false),
                     CategoryID = table.Column<int>(type: "int", nullable: false),
                     CreatedUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AssignedUserID = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -255,6 +291,27 @@ namespace Planner.Migrations
                         name: "FK_WorkTasks_Categories_CategoryID",
                         column: x => x.CategoryID,
                         principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UploadFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WorkTaskId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UploadFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UploadFiles_WorkTasks_WorkTaskId",
+                        column: x => x.WorkTaskId,
+                        principalTable: "WorkTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -304,6 +361,21 @@ namespace Planner.Migrations
                 column: "PlanID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_ReceivedUserId",
+                table: "Notifications",
+                column: "ReceivedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_SendedUserId",
+                table: "Notifications",
+                column: "SendedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UploadFiles_WorkTaskId",
+                table: "UploadFiles",
+                column: "WorkTaskId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserPlans_PlanId",
                 table: "UserPlans",
                 column: "PlanId");
@@ -348,13 +420,19 @@ namespace Planner.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "UploadFiles");
+
+            migrationBuilder.DropTable(
                 name: "UserPlans");
 
             migrationBuilder.DropTable(
-                name: "WorkTasks");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "WorkTasks");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

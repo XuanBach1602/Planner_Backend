@@ -31,6 +31,8 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUploadFileRepository, UploadFileRepository>();
 builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<IUserPlanRepository, UserPlanRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //Identity

@@ -4,7 +4,7 @@ namespace Planner.Services
 {
     public class FilterService : IFilterService
     {
-        public IEnumerable<WorkTaskOutput> FilterWorkTask(IEnumerable<WorkTaskOutput> workTasks, string due, string priority, string progress)
+        public IEnumerable<WorkTaskOutput> FilterWorkTask(IEnumerable<WorkTaskOutput> workTasks, string? due, string? priority, string? progress)
         {
             if (!string.IsNullOrEmpty(due))
             {

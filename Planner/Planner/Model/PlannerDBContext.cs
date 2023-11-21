@@ -11,6 +11,7 @@ namespace Planner.Model
         public DbSet<UserPlan> UserPlans { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -29,6 +30,16 @@ namespace Planner.Model
                 .WithOne(f => f.WorkTask)
                 .HasForeignKey(f => f.WorkTaskId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Notification>()
+                .HasOne(x => x.SendedUser)
+                .WithMany()
+                .HasForeignKey(x => x.SendedUserId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Notification>()
+                .HasOne(x => x.ReceivedUser)
+                .WithMany()
+                .HasForeignKey(x => x.ReceivedUserId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

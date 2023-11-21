@@ -12,8 +12,8 @@ using Planner.Model;
 namespace Planner.Migrations
 {
     [DbContext(typeof(PlannerDbContext))]
-    [Migration("20231106155812_changeWorkTask")]
-    partial class changeWorkTask
+    [Migration("20231120101811_changeNotification")]
+    partial class changeNotification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,48 @@ namespace Planner.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Planner.Model.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceivedUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ResponseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SendedUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceivedUserId");
+
+                    b.HasIndex("SendedUserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Planner.Model.Plan", b =>
                 {
                     b.Property<int>("Id")
@@ -331,6 +373,10 @@ namespace Planner.Migrations
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -368,9 +414,15 @@ namespace Planner.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("date");
 
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -454,6 +506,25 @@ namespace Planner.Migrations
                         .IsRequired();
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Planner.Model.Notification", b =>
+                {
+                    b.HasOne("Planner.Model.User", "ReceivedUser")
+                        .WithMany()
+                        .HasForeignKey("ReceivedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Planner.Model.User", "SendedUser")
+                        .WithMany()
+                        .HasForeignKey("SendedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ReceivedUser");
+
+                    b.Navigation("SendedUser");
                 });
 
             modelBuilder.Entity("Planner.Model.UploadFile", b =>

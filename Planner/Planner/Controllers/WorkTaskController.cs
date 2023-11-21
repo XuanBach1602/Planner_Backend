@@ -186,8 +186,8 @@ namespace Planner.Controllers
             public int PlanId { get; set; }
             public required string CreatedUserId { get; set; }
             public string? AssignedUserId { get; set; }
-            public string ModifiedDate { get; set; }
-            public List<UploadFile> Files { get; set; }
+            public string ModifiedDate { get; set; } = string.Empty;
+            public List<UploadFile> Files { get; set; } = new List<UploadFile>();
             //public string CategoryName { get; set; } = string.Empty;
             // Other properties if needed
         }

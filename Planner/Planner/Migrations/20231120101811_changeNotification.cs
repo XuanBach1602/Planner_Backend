@@ -5,21 +5,18 @@
 namespace Planner.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPrivacyToPlanAndPriorityToWorkTask : Migration
+    public partial class changeNotification : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Priority",
-                table: "WorkTasks",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.DropColumn(
+                name: "Content",
+                table: "Notifications");
 
             migrationBuilder.AddColumn<bool>(
-                name: "IsPrivacy",
-                table: "Plans",
+                name: "IsSeen",
+                table: "Notifications",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -29,12 +26,15 @@ namespace Planner.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Priority",
-                table: "WorkTasks");
+                name: "IsSeen",
+                table: "Notifications");
 
-            migrationBuilder.DropColumn(
-                name: "IsPrivacy",
-                table: "Plans");
+            migrationBuilder.AddColumn<string>(
+                name: "Content",
+                table: "Notifications",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }

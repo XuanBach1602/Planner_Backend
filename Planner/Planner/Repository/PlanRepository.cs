@@ -23,7 +23,8 @@ namespace Planner.Repository
             var userPlan = new UserPlan
             {
                 PlanId = planid,
-                UserId = plan.CreatedUserID
+                UserId = plan.CreatedUserID,
+                Role = "Leader"
             };
             await _context.UserPlans.AddAsync(userPlan);
             await _context.SaveChangesAsync();
