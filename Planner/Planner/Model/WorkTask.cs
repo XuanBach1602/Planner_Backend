@@ -24,6 +24,9 @@ namespace Planner.Model
         public DateTime DueDate { get; set; }
         public DateTime? ModifiedDate { get; set; } = DateTime.Now;
         public int PlanId { get; set; }
+        public bool IsPrivate { get; set; }
+        public bool IsApproved { get; set; }
+        public DateTime? CompletedTime { get; set; }
 
         //public string? Attachment { get; set; }
 
@@ -45,6 +48,10 @@ namespace Planner.Model
         [JsonIgnore]
         [ForeignKey(nameof(AssignedUserID))]
         public User? AssignedUser { get; set; }
+        public string? CompletedUserId { get; set; }
+        [ForeignKey("CompletedUserId")]
+        [JsonIgnore]
+        public User? CompletedUser { get; set; }
 
         public ICollection<UploadFile> Files { get; set; }
 

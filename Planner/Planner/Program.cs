@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Planner.Hubs;
 using Planner.Model;
 using Planner.Repository;
 using Planner.Repository.IRepository;
@@ -33,7 +34,10 @@ builder.Services.AddScoped<IUploadFileRepository, UploadFileRepository>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<IUserPlanRepository, UserPlanRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ITemporaryWorkTaskRepository, TemporaryWorkTaskRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddSignalR();
 
 //Identity
 builder.Services.AddIdentity<User, IdentityRole>()
@@ -77,7 +81,9 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
-               .AllowAnyHeader();
+               .AllowAnyHeader()
+               .AllowCredentials()
+                .SetIsOriginAllowed((hosts) => true);
     });
 });
 
@@ -89,7 +95,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors();
+app.MapHub<NotificationHub>("api/NotificationHub");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -99,7 +106,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.MapControllers();
+//app.MapHub<NotificationHub>("/NotificationHub");
 
-app.UseCors();
+//app.UseCors();
 
 app.Run();

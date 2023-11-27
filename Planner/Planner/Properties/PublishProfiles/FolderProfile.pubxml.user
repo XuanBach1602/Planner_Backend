@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\CodeVisualStudio\Planner\Planner_Backend\Planner\Planner\bin\Release\net7.0\publish\</_PublishTargetUrl>
-    <History>True|2023-11-16T17:29:52.9825073Z;True|2023-11-16T20:57:00.4903014+07:00;True|2023-11-13T00:19:22.9630190+07:00;True|2023-11-12T12:57:22.5576715+07:00;</History>
+    <History>True|2023-11-23T17:59:22.9805411Z;True|2023-11-23T23:51:32.8667120+07:00;True|2023-11-17T00:29:52.9825073+07:00;True|2023-11-16T20:57:00.4903014+07:00;True|2023-11-13T00:19:22.9630190+07:00;True|2023-11-12T12:57:22.5576715+07:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

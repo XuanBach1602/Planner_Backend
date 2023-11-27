@@ -9,11 +9,15 @@
         public required string Priority { get; set; }
         public required string StartDate { get; set; }
         public required string DueDate { get; set; }
+        public required bool IsPrivate { get; set; }
         public int CategoryId { get; set; }
+        public string? CompletedUserId { get; set; }
         public int PlanId { get; set; }
         public required string CreatedUserId { get; set; }
         public string? AssignedUserId { get; set; }
         public string ModifiedDate { get; set; }
+        public string? CompletedTime { get; set; }
+        public bool IsApproved { get; set; }
         public List<UploadFile> Files { get; set; }
         public string CategoryName { get; set; } = string.Empty;
     }

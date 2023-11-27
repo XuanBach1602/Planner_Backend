@@ -11,7 +11,6 @@ namespace Planner.Controllers
     public class NotificationController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
         public NotificationController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -20,8 +19,7 @@ namespace Planner.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(NotificationInput notificationInput)
         {
-            var notification = ConvertToNotification(notificationInput);
-            await _unitOfWork.Notification.AddAsync(notification);
+            await _unitOfWork.Notification.AddAsync(notificationInput);
             try
             {
                 await _unitOfWork.Save();
@@ -77,29 +75,14 @@ namespace Planner.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetAll(string userId)
         {
-            var Notifications = await _unitOfWork.Notification.GetAllAsync(x => x.SendedUserId == userId);
+            var Notifications = await _unitOfWork.Notification.GetAllAsync(x => x.ReceivedUserId == userId);
             if (Notifications == null)
             {
                 return NotFound();
             }
 
-            return Ok(Notifications);
+            return Ok(Notifications.OrderByDescending(x => x.Id));
 
-        }
-
-        [NonAction]
-        public Notification ConvertToNotification(NotificationInput notificationInput)
-        {
-            return new Notification
-            {
-                Title = notificationInput.Title,
-                IsSeen = notificationInput.IsSeen,
-                ReceivedUserId = notificationInput.ReceivedUserId,
-                SendedUserId = notificationInput.ReceivedUserId,
-                Status = "Not responsed",
-                CreatedTime = DateTime.Now,
-                PlanId = notificationInput.PlanId
-            };
         }
     }
 }

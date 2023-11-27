@@ -107,6 +107,7 @@ namespace Planner.Controllers
 
                 string userId = claim.Value;
                 var user = _userManager.Users.FirstOrDefault(x => x.Id == userId);
+                if (user == null) return Unauthorized("Invalid Refresh Token.");
                 if (!user.RefreshToken.Equals(refreshToken))
                 {
                     return Unauthorized("Invalid Refresh Token.");

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Planner.Model;
 using Planner.Repository.IRepository;
 using System.Linq.Expressions;
@@ -13,16 +14,21 @@ namespace Planner.Repository
             _context = context;
         }
 
-        public async Task AddAsync(Notification notification)
+        public async Task<Notification?> AddAsync(NotificationInput notificationInput)
         {
+            var notification = ConvertToNotification(notificationInput);
             var notificationList = await GetAsync(x => x.PlanId == notification.PlanId
-            && x.ReceivedUserId == notification.ReceivedUserId && x.Title == "Invitation" && x.Status == "Not responsed");
+                && x.ReceivedUserId == notification.ReceivedUserId && x.Title == "Invitation" && x.Status == "Not responsed");
             if (notificationList == null)
             {
                 await _context.Notifications.AddAsync(notification);
+                await _context.SaveChangesAsync(); // Lưu thay đổi vào cơ sở dữ liệu
+                return notification;
             }
 
+            return null;
         }
+
 
         public async Task<IEnumerable<NotificationOutput>> GetAllAsync(Expression<Func<Notification, bool>> filter)
         {
@@ -92,6 +98,21 @@ namespace Planner.Repository
                 ResponseTime = notification.ResponseTime,
                 ImgUrl = notification.SendedUser.ImgUrl
 
+            };
+        }
+
+        [NonAction]
+        public Notification ConvertToNotification(NotificationInput notificationInput)
+        {
+            return new Notification
+            {
+                Title = notificationInput.Title,
+                IsSeen = notificationInput.IsSeen,
+                ReceivedUserId = notificationInput.ReceivedUserId,
+                SendedUserId = notificationInput.SendedUserId,
+                Status = "Not responsed",
+                CreatedTime = DateTime.Now,
+                PlanId = notificationInput.PlanId
             };
         }
     }

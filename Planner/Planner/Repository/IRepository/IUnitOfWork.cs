@@ -9,6 +9,7 @@
         public IUploadFileRepository UploadFile { get; }
         public IUserPlanRepository UserPlan { get; }
         public INotificationRepository Notification { get; }
+        public ITemporaryWorkTaskRepository TemporaryWorkTask { get; }
         Task Save();
     }
 }
