@@ -13,6 +13,7 @@ namespace Planner.Model
         [ForeignKey("PlanId")]
         [JsonIgnore]
         public Plan? Plan { get; set; }
+        public int? WorkTaskId { get; set; }
         public required string ReceivedUserId { get; set; }
         [ForeignKey("ReceivedUserId")]
         [JsonIgnore]
@@ -24,6 +25,7 @@ namespace Planner.Model
         public DateTime CreatedTime { get; set; }
         public required string Status { get; set; }
         public DateTime? ResponseTime { get; set; }
+
 
     }
 }

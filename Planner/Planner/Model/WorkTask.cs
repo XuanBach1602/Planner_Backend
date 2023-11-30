@@ -9,6 +9,8 @@ namespace Planner.Model
     {
         [Key]
         public int Id { get; set; }
+        public int? OriginId { get; set; }
+        public WorkTask? Origin { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
@@ -52,6 +54,7 @@ namespace Planner.Model
         [ForeignKey("CompletedUserId")]
         [JsonIgnore]
         public User? CompletedUser { get; set; }
+        public bool IsUpdateTask { get; set; }
 
         public ICollection<UploadFile> Files { get; set; }
 

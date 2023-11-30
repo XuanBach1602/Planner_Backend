@@ -34,7 +34,7 @@ builder.Services.AddScoped<IUploadFileRepository, UploadFileRepository>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<IUserPlanRepository, UserPlanRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<ITemporaryWorkTaskRepository, TemporaryWorkTaskRepository>();
+//builder.Services.AddScoped<ITemporaryWorkTaskRepository, TemporaryWorkTaskRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddSignalR();
@@ -82,8 +82,8 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
                .AllowAnyHeader()
-               .AllowCredentials()
-                .SetIsOriginAllowed((hosts) => true);
+               .AllowCredentials();
+        //.SetIsOriginAllowed((hosts) => true);
     });
 });
 

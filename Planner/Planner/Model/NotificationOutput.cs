@@ -15,5 +15,7 @@
         public DateTime CreatedTime { get; set; }
         public required string Status { get; set; }
         public DateTime? ResponseTime { get; set; }
+        public int? WorkTaskId { get; internal set; }
+        public string? WorkTaskName { get; set; }
     }
 }

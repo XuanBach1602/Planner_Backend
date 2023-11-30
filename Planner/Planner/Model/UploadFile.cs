@@ -11,9 +11,9 @@ namespace Planner.Model
         [Required]
         public string Url { get; set; } = string.Empty;
         [Required]
-        public int WorkTaskId { get; set; } = 0;
+        public int? WorkTaskId { get; set; } = 0;
         [JsonIgnore]
-        public WorkTask WorkTask { get; set; }
+        public WorkTask? WorkTask { get; set; }
 
     }
 }

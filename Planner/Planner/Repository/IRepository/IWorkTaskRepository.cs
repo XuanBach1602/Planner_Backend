@@ -13,5 +13,6 @@ namespace Planner.Repository.IRepository
         Task Remove(int id);
         Task UpdateStatus(int id, string status, string? userId);
         public Task<CountTasks> GetCountOfFilteredTask(int planId);
+        public Task UpdateTaskById(int id);
     }
 }

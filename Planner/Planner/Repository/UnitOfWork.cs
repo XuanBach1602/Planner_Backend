@@ -8,7 +8,7 @@ namespace Planner.Repository
         private readonly PlannerDbContext _db;
         public UnitOfWork(IPlanRepository plannerRepository, IWorkTaskRepository workTaskRepository, PlannerDbContext db,
             IUserRepository user, ICategoryRepository categoryRepository, IUploadFileRepository uploadFileRepository,
-            IUserPlanRepository userPlan, INotificationRepository notificationRepository, ITemporaryWorkTaskRepository temporaryWorkTask)
+            IUserPlanRepository userPlan, INotificationRepository notificationRepository)
         {
             Plan = plannerRepository;
             WorkTask = workTaskRepository;
@@ -18,7 +18,7 @@ namespace Planner.Repository
             UploadFile = uploadFileRepository;
             UserPlan = userPlan;
             Notification = notificationRepository;
-            TemporaryWorkTask = temporaryWorkTask;
+            //TemporaryWorkTask = temporaryWorkTask;
         }
 
         public IPlanRepository Plan { get; set; }
@@ -29,7 +29,7 @@ namespace Planner.Repository
         public IUploadFileRepository UploadFile { get; set; }
         public IUserPlanRepository UserPlan { get; set; }
         public INotificationRepository Notification { get; set; }
-        public ITemporaryWorkTaskRepository TemporaryWorkTask { get; set; }
+        //public ITemporaryWorkTaskRepository TemporaryWorkTask { get; set; }
 
         public async Task Save()
         {

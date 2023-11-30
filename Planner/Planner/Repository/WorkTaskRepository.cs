@@ -18,12 +18,17 @@ namespace WorkTaskner.Repository
 
         public async Task AddAsync(WorkTask WorkTask)
         {
+            if (WorkTask.Status == "Completed")
+            {
+                WorkTask.CompletedUserId = WorkTask.CreatedUserID;
+                WorkTask.CompletedTime = DateTime.Now;
+            }
             await _context.WorkTasks.AddAsync(WorkTask);
         }
 
         public async Task<IEnumerable<WorkTaskOutput>> GetAllAsync(Expression<Func<WorkTask, bool>>? filter = null, string? includeProperties = null)
         {
-            IQueryable<WorkTask> query = _context.WorkTasks.Include(wt => wt.Category).Include(wt => wt.Files);
+            IQueryable<WorkTask> query = _context.WorkTasks.Include(wt => wt.Category).Include(wt => wt.Files).Where(wt => wt.IsUpdateTask == false);
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -43,7 +48,7 @@ namespace WorkTaskner.Repository
 
         public async Task<WorkTaskOutput> GetFirstOrDefaultAsync(Expression<Func<WorkTask, bool>> filter, string? includeProperties = null)
         {
-            IQueryable<WorkTask> query = _context.WorkTasks.Include(wt => wt.Category).Include(wt => wt.Files);
+            IQueryable<WorkTask> query = _context.WorkTasks.Include(wt => wt.Category).Include(wt => wt.Files).Include(wt => wt.Origin);
             query = query.Where(filter);
 
             if (includeProperties != null)
@@ -79,7 +84,22 @@ namespace WorkTaskner.Repository
         public async Task Remove(int id)
         {
             var workTask = await _context.WorkTasks.FirstOrDefaultAsync(x => x.Id == id);
-            if (workTask != null) { _context.WorkTasks.Remove(workTask); }
+            if (workTask != null)
+            {
+
+                var workTasks = await _context.WorkTasks.Where(x => x.OriginId == id).ToListAsync();
+                if (workTasks != null)
+                {
+                    foreach (var worktask in workTasks)
+                    {
+                        var notifications = await _context.Notifications.Where(x => x.WorkTaskId == worktask.Id).ToListAsync();
+                        _context.Notifications.RemoveRange(notifications);
+                    }
+                    _context.WorkTasks.RemoveRange(workTasks);
+                }
+
+                _context.WorkTasks.Remove(workTask);
+            }
             else throw new Exception("The work task is not found");
         }
 
@@ -106,6 +126,49 @@ namespace WorkTaskner.Repository
                 worktask.Status = status;
             }
             else throw new Exception("Can not find the work task");
+        }
+
+        public async Task UpdateTaskById(int id)
+        {
+            var updatedWorkTask = await _context.WorkTasks.FirstOrDefaultAsync(x => x.Id == id);
+            if (updatedWorkTask == null)
+            {
+                throw new Exception("Cannot find the worktask");
+            }
+            //if (updatedWorkTask.OriginId != null)
+            //{
+            //    var originId = updatedWorkTask.OriginId;
+            //    //updatedWorkTask.IsUpdateTask = false;
+            //    updatedWorkTask.OriginId = null;
+            //    await _context.SaveChangesAsync();
+            //    //await Remove((int)originId);
+            //}
+            if (updatedWorkTask.OriginId != null)
+            {
+                //updatedWorkTask.OriginId = null;
+
+                var workTask = await _context.WorkTasks.FirstOrDefaultAsync(x => x.Id == updatedWorkTask.OriginId);
+                workTask.Status = updatedWorkTask.Status;
+                workTask.StartDate = updatedWorkTask.StartDate;
+                workTask.DueDate = updatedWorkTask.DueDate;
+                workTask.ModifiedDate = updatedWorkTask.ModifiedDate;
+                workTask.IsPrivate = updatedWorkTask.IsPrivate;
+                workTask.AssignedUserID = updatedWorkTask.AssignedUserID;
+                workTask.CompletedUserId = updatedWorkTask.CompletedUserId;
+                //workTask.IsUpdateTask = updatedWorkTask.IsUpdateTask;
+                workTask.Files = updatedWorkTask.Files;
+                workTask.CategoryID = updatedWorkTask.CategoryID;
+                workTask.PlanId = updatedWorkTask.PlanId;
+                workTask.CreatedUserID = updatedWorkTask.CreatedUserID;
+                workTask.Name = updatedWorkTask.Name;
+                workTask.Description = updatedWorkTask.Description;
+                workTask.Priority = updatedWorkTask.Priority;
+                workTask.CompletedTime = updatedWorkTask.CompletedTime;
+                workTask.IsApproved = updatedWorkTask.IsApproved;
+                workTask.ModifiedDate = updatedWorkTask.ModifiedDate;
+                //await _context.SaveChangesAsync();
+            }
+
         }
 
         public class CountTasks
@@ -138,7 +201,10 @@ namespace WorkTaskner.Repository
                 IsPrivate = workTask.IsPrivate,
                 CompletedUserId = workTask.CompletedUserId,
                 CompletedTime = workTask.CompletedTime?.ToString("yyyy-MM-dd"),
-                IsApproved = workTask.IsApproved
+                IsApproved = workTask.IsApproved,
+                OriginId = workTask.OriginId,
+                OriginName = workTask?.Origin?.Name
+
 
             };
         }

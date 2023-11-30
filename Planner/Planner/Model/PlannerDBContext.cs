@@ -12,7 +12,7 @@ namespace Planner.Model
         public DbSet<Category> Categories { get; set; }
         public DbSet<UploadFile> UploadFiles { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<TemporaryWorkTask> TemporaryWorkTasks { get; set; }
+        //public DbSet<TemporaryWorkTask> TemporaryWorkTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

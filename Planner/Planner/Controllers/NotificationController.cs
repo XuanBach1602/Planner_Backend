@@ -84,5 +84,43 @@ namespace Planner.Controllers
             return Ok(Notifications.OrderByDescending(x => x.Id));
 
         }
+
+        [HttpPut("/update/{id}")]
+        public async Task<IActionResult> UpdateTaskById(int id)
+        {
+            await _unitOfWork.WorkTask.UpdateTaskById(id);
+            try
+            {
+                await _unitOfWork.Save();
+                return Ok("Update succesfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("ApprovedUpdate/{id}")]
+        public async Task<IActionResult> ApprovedUpdate(int id, string status)
+        {
+            var notification = await _unitOfWork.Notification.GetAsync(x => x.Id == id);
+            if (notification == null) return BadRequest("Can not find the notification");
+            await _unitOfWork.Notification.UpdateStatus(id, status);
+            try
+            {
+                if (status == "Accepted")
+                {
+                    await _unitOfWork.WorkTask.UpdateTaskById((int)notification.WorkTaskId);
+                    await _unitOfWork.Save();
+                    return Ok("Update worktask successfully");
+                }
+                await _unitOfWork.Save();
+                return Ok("Update notificaton succesfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
+        }
     }
 }

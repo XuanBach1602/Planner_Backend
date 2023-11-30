@@ -51,7 +51,11 @@ namespace Planner.Controllers
                 return BadRequest("The user's data is invalid");
             }
             var ImgUrl = await _fileService.UploadFile(update.File);
-            _fileService.DeleteFile(user.ImgUrl);
+
+            if (user.ImgUrl != "default.png")
+            {
+                _fileService.DeleteFile(user.ImgUrl);
+            }
             user.ImgUrl = ImgUrl;
             user.PhoneNumber = update.PhoneNumber;
             user.Email = update.Email;

@@ -96,7 +96,8 @@ namespace Planner.Repository
                 SendedUserName = notification.SendedUser.Name,
                 CreatedTime = notification.CreatedTime,
                 ResponseTime = notification.ResponseTime,
-                ImgUrl = notification.SendedUser.ImgUrl
+                ImgUrl = notification.SendedUser.ImgUrl,
+                WorkTaskId = notification.WorkTaskId,
 
             };
         }
@@ -112,7 +113,8 @@ namespace Planner.Repository
                 SendedUserId = notificationInput.SendedUserId,
                 Status = "Not responsed",
                 CreatedTime = DateTime.Now,
-                PlanId = notificationInput.PlanId
+                PlanId = notificationInput.PlanId,
+                WorkTaskId = notificationInput.WorkTaskId,
             };
         }
     }

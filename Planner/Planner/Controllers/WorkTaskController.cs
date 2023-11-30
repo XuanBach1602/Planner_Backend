@@ -32,7 +32,7 @@ namespace Planner.Controllers
                 var fileList = workTaskInput.AttachedFiles;
                 await _unitOfWork.UploadFile.AddMultipleFiles(fileList, workTask.Id);
                 await _unitOfWork.Save();
-                return Ok(new { message = "Add workTask successfully" });
+                return Ok(workTask);
             }
 
             catch (Exception ex)
@@ -40,6 +40,25 @@ namespace Planner.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddUpdateVersion([FromForm] WorkTaskInput workTaskInput)
+        //{
+        //    var workTask = ConvertToWorkTask(workTaskInput);
+        //    await _unitOfWork.WorkTask.AddAsync(workTask);
+        //    try
+        //    {
+        //        await _unitOfWork.Save();
+        //        var fileList = workTaskInput.AttachedFiles;
+        //        await _unitOfWork.UploadFile.AddMultipleFiles(fileList, workTask.Id);
+        //        await _unitOfWork.Save();
+        //        return Ok(workTask);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpPut]
         public async Task<IActionResult> Update([FromForm] WorkTaskInput workTaskInput)
@@ -169,6 +188,22 @@ namespace Planner.Controllers
             return Ok(count);
         }
 
+        [HttpPut("UpdateApproved/{id}")]
+        public async Task<IActionResult> UpdateApproved(int id)
+        {
+            await _unitOfWork.WorkTask.UpdateTaskById(id);
+            try
+            {
+                await _unitOfWork.Save();
+                return Ok("Update worktask successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         public class WorkTaskInput
         {
             public int? Id { get; set; } = 0;
@@ -194,6 +229,8 @@ namespace Planner.Controllers
             public string? CompletedUserID { get; set; }
             public bool IsApproved { get; set; }
             public List<IFormFile>? AttachedFiles { get; set; }
+            public int? OriginId { get; set; }
+            public bool IsUpdateTask { get; set; }
 
         }
         private WorkTask ConvertToWorkTask(WorkTaskInput model)
@@ -213,9 +250,13 @@ namespace Planner.Controllers
                 PlanId = model.PlanID,
                 IsPrivate = model.IsPrivate,
                 CompletedUserId = model.CompletedUserID != "null" ? model.CompletedUserID : null,
-                IsApproved = model.IsApproved
+                IsApproved = model.IsApproved,
+                IsUpdateTask = model.IsUpdateTask,
+                OriginId = model.OriginId,
             };
         }
+
+
     }
 
 

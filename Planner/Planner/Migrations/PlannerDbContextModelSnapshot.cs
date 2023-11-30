@@ -213,6 +213,9 @@ namespace Planner.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("WorkTaskId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PlanId");
@@ -248,55 +251,6 @@ namespace Planner.Migrations
                     b.ToTable("Plans");
                 });
 
-            modelBuilder.Entity("Planner.Model.TemporaryWorkTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AssignedUserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompletedUserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPrivate")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("WorkTaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TemporaryWorkTasks");
-                });
-
             modelBuilder.Entity("Planner.Model.UploadFile", b =>
                 {
                     b.Property<int>("Id")
@@ -313,7 +267,8 @@ namespace Planner.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("WorkTaskId")
+                    b.Property<int?>("WorkTaskId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -477,12 +432,18 @@ namespace Planner.Migrations
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsUpdateTask")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OriginId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
@@ -507,6 +468,8 @@ namespace Planner.Migrations
                     b.HasIndex("CompletedUserId");
 
                     b.HasIndex("CreatedUserID");
+
+                    b.HasIndex("OriginId");
 
                     b.ToTable("WorkTasks");
                 });
@@ -652,6 +615,10 @@ namespace Planner.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Planner.Model.WorkTask", "Origin")
+                        .WithMany()
+                        .HasForeignKey("OriginId");
+
                     b.Navigation("AssignedUser");
 
                     b.Navigation("Category");
@@ -659,6 +626,8 @@ namespace Planner.Migrations
                     b.Navigation("CompletedUser");
 
                     b.Navigation("CreatedUser");
+
+                    b.Navigation("Origin");
                 });
 
             modelBuilder.Entity("Planner.Model.WorkTask", b =>

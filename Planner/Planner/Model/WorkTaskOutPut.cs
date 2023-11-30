@@ -3,6 +3,7 @@
     public class WorkTaskOutput
     {
         public int Id { get; set; }
+        public int? OriginId { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public required string Status { get; set; }
@@ -20,5 +21,7 @@
         public bool IsApproved { get; set; }
         public List<UploadFile> Files { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public bool IsUpdateTask { get; set; }
+        public string? OriginName { get; internal set; }
     }
 }
