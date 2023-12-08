@@ -200,10 +200,13 @@ namespace WorkTaskner.Repository
                 CategoryName = workTask.Category.Name,
                 IsPrivate = workTask.IsPrivate,
                 CompletedUserId = workTask.CompletedUserId,
-                CompletedTime = workTask.CompletedTime?.ToString("yyyy-MM-dd"),
+                CompletedTime = workTask.CompletedTime?.ToString("yyyy-MM-dd HH:mm"),
                 IsApproved = workTask.IsApproved,
                 OriginId = workTask.OriginId,
-                OriginName = workTask?.Origin?.Name
+                OriginName = workTask?.Origin?.Name,
+                Frequency = workTask?.Frequency,
+                StartTime = workTask.StartTime,
+                EndTime = workTask.EndTime
 
 
             };

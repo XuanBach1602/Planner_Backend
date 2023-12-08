@@ -231,6 +231,9 @@ namespace Planner.Controllers
             public List<IFormFile>? AttachedFiles { get; set; }
             public int? OriginId { get; set; }
             public bool IsUpdateTask { get; set; }
+            public required string Frequency { get; set; }
+            public string StartTime { get; set; } = "08:00";
+            public string EndTime { get; set; } = "10:00";
 
         }
         private WorkTask ConvertToWorkTask(WorkTaskInput model)
@@ -253,6 +256,9 @@ namespace Planner.Controllers
                 IsApproved = model.IsApproved,
                 IsUpdateTask = model.IsUpdateTask,
                 OriginId = model.OriginId,
+                Frequency = model.Frequency,
+                StartTime = model.StartTime,
+                EndTime = model.EndTime,
             };
         }
 

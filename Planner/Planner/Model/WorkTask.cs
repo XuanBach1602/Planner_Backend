@@ -57,6 +57,9 @@ namespace Planner.Model
         public bool IsUpdateTask { get; set; }
 
         public ICollection<UploadFile> Files { get; set; }
+        public string Frequency { get; set; } = "Daily";
+        public string StartTime { get; set; } = "08:00";
+        public string EndTime { get; set; } = "10:00";
 
 
     }

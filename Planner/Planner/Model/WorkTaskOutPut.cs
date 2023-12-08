@@ -22,6 +22,9 @@
         public List<UploadFile> Files { get; set; }
         public string CategoryName { get; set; } = string.Empty;
         public bool IsUpdateTask { get; set; }
-        public string? OriginName { get; internal set; }
+        public string? OriginName { get; set; }
+        public string Frequency { get; set; } = "Daily";
+        public string StartTime { get; set; } = "08:00";
+        public string EndTime { get; set; } = "10:00";
     }
 }

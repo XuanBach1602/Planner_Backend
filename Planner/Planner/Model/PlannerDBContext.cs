@@ -17,12 +17,12 @@ namespace Planner.Model
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<WorkTask>()
-                .Property(x => x.StartDate)
-                .HasColumnType("date");
-            builder.Entity<WorkTask>()
-               .Property(x => x.DueDate)
-               .HasColumnType("date");
+            //builder.Entity<WorkTask>()
+            //    .Property(x => x.StartDate)
+            //    .HasColumnType("date");
+            //builder.Entity<WorkTask>()
+            //   .Property(x => x.DueDate)
+            //   .HasColumnType("date");
             builder.Entity<User>()
                 .Property(x => x.DateOfBirth)
                 .HasColumnType("date");
